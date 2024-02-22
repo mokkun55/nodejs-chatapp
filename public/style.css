@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding-bottom: 3rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+}
+
+
+/* メッセージの欄 */
+#messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#messages > li {
+  padding: 0.5rem 1rem;
+}
+#messages > li:nth-child(odd) {
+  background: #efefef;
+} 
+
+/* 削除ボタンのスタイル */
+.DelButton {
+  background-color: #df2b17;
+  border: none;
+  padding: 0 1rem;
+  margin: 0.25rem;
+  border-radius: 1px;
+  outline: none;
+  color: #fff;
+  border-radius: 1rem;
+}
+
