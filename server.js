@@ -18,7 +18,8 @@ io.on("connection", (socket) => { //接続処理
 
     socket.on("chat message", (data) => { //chat messageを受け取ったとき
         msg = data.message //dataはオブジェクト型で idとmessageが格納されている そこからmessege を取り出しmsgに代入
-        console.log("textInput>> " + msg) //コンソールに出す
+        msgName = data.name
+        console.log(msgName +">> " + msg) //コンソールに出す
         io.emit("chat message", data); //全体に共有
     });
 
