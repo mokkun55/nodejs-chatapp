@@ -10,13 +10,14 @@
 </head>
 <body>
     <ul id="messages"></ul>
-    <div class="col-auto">
+    <div class="col-auto" id="form">
         <form action="" id="form" class="input-group">
             <input id="input" autocomplete="off" class="form-control" placeholder="メッセージを入力"/>
-            <button class="btn btn-primary" type="submit">Send</button>
+            <button class="btn btn-primary" type="submit">送信</button>
+            <button id="clear" class="btn btn-danger colors-blue">全消し</button>
         </form>
     </div>
-    <button id="clear" class="btn btn-danger colors-blue">Clear</button>
+    
 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script> <!-- UUIDを使うためのCDN -->

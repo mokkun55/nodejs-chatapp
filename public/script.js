@@ -20,8 +20,8 @@ clearButton.addEventListener("click", function (e) {
 // ---------------------------------------------文字を送信-----------------------------------
 form.addEventListener("submit", function (e) { 
   e.preventDefault(); 
-  if (input.value) { 
-    id = uuid.v4()
+  if (input.value) { // 空白でなければ
+    id = uuid.v4() //ID = uuidで唯一無二のIDを付加
     // console.log(id);
     let data = { message: input.value, id: id }; // メッセージと一意のIDをdataオブジェクトに格納
     socket.emit("chat message", data); 

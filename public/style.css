@@ -19,6 +19,17 @@ body {
   background: #efefef;
 } 
 
+/* 入力欄、ボタン等 */
+#form {
+  /* 下固定 */
+  position: fixed; 
+  bottom: 0; 
+  width: 100%; 
+  height: 4rem; /* 高さを追加して大きく表示 */
+  font-size: 1.5rem;
+}
+
+
 /* 削除ボタンのスタイル */
 .DelButton {
   background-color: #df2b17;
@@ -30,4 +41,3 @@ body {
   color: #fff;
   border-radius: 1rem;
 }
-
