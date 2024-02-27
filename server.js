@@ -10,11 +10,9 @@ const msgRouter = require("./routes/msgRoutes");
 const msg = require("./models/msg");
 const axios = require("axios");
 app.use(msgRouter); //使います
-
+require('dotenv').config(); //.env使う
 // データベースと接続
-mongoose.connect(
-    "mongodb+srv://mokkunpc:KgnJJD3JX1tOVrcW@cluster0.j0ztzea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    )
+mongoose.connect(process.env.mongoDB_URL)
     .then(() => console.log("データベースと接続されました"))
     .catch((err) => console.log(err));
 
