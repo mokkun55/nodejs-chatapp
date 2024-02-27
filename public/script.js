@@ -6,6 +6,48 @@ const messages = document.getElementById("messages");
 const clearButton = document.getElementById("clear");
 
 
+// --------msg全部読み込む--------
+const getAllmsg = async() => {
+  try {
+    let Allmsg = await axios.get("/api/v1/msgs");
+    let {data} = Allmsg;
+    // console.log(data);
+
+        //出力
+    Allmsg = data.map((Allmsg) => {
+      console.log(Allmsg._id);
+
+      msg = Allmsg.msg;
+      msgName = Allmsg.name;
+      msgId = Allmsg._id;
+
+      let item = document.createElement("li");
+      item.id = msgId;
+      item.textContent = msgName + ">> " + msg; //liに内容(msg)を書き込む
+      messages.appendChild(item); //メッセージにliを追加
+      window.scrollTo(0, document.body.scrollHeight); //画面をスクロール
+    
+    
+      // 個々削除ボタン処理
+      let DelButton = document.createElement("button"); // 削除ボタンを作成
+      item.appendChild(DelButton); // liの子要素にdelボタンを追加
+      DelButton.textContent = "消す"; // ボタンのテキストを"消す"に設定
+      DelButton.className = "DelButton"; //作ったボタンにclass割当 ← CSSを使いたいから
+      DelButton.id = msgId; //_idをIDにボタンのIDにする
+        //クリックされたときの処理
+        DelButton.addEventListener("click", () => { //delBtnクリックしたときそのIDをdeleteAPIの引数に指定して返す
+          deleteAPI(DelButton.id);
+          socket.emit("delete message", DelButton.id);
+        });
+      
+    })
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+getAllmsg();
+
 // ---------------------------------------------全消しボタン----------------------------------
 clearButton.addEventListener("click", function (e) { 
     e.preventDefault(); //リロードなくす
@@ -19,15 +61,22 @@ clearButton.addEventListener("click", function (e) {
 
 
 // ---------------------------------------------文字を送信-----------------------------------
-form.addEventListener("submit", function (e) { 
+form.addEventListener("submit", async (e) => { 
   e.preventDefault(); 
   if(InputName.value) {
-    let name = InputName.value; // nameを定義
     // console.log(name)
     if (input.value) { // 空白でなければ
-      id = uuid.v4() //ID = uuidで唯一無二のIDを付加
-      // console.log(id);
-      let data = { message: input.value, id: id, name: name}; // メッセージと一意のIDとnameをdataオブジェクトに格納
+      let data = { // メッセージとnameをdataオブジェクトに格納 json形式
+        msg: input.value,
+        name: InputName.value,
+      }; 
+
+    try {                 // ここでapiを叩いてデータをdbにアップロード
+      await axios.post(`/api/v1/msg`, data)
+    } catch (error) {
+      console.log(error);
+    }
+
       socket.emit("chat message", data); 
       input.value = ""; //入力欄を空にする
     } else {
@@ -43,12 +92,13 @@ form.addEventListener("submit", function (e) {
 
 // ------------------------------------------ サーバー受け取り処理 socket.on -----------------------------------------
 socket.on("chat message", (data) => { //メッセージ受け取り
-  msg = data.message
-  msgId = data.id //dataはオブジェクト型なので 使える形に
+  console.log(data);
+  msg = data.msg
   msgName = data.name
+  msgId = data._id; 
   let item = document.createElement("li");
+  item.id = msgId;
   item.textContent = msgName + ">> " + msg; //liに内容(msg)を書き込む
-  item.id = data.id; //ここでliのIDにUUIDを追加して 判別できるようにしている
   messages.appendChild(item); //メッセージにliを追加
   window.scrollTo(0, document.body.scrollHeight); //画面をスクロール
 
@@ -58,10 +108,8 @@ socket.on("chat message", (data) => { //メッセージ受け取り
   item.appendChild(DelButton); // liの子要素にdelボタンを追加
   DelButton.textContent = "消す"; // ボタンのテキストを"消す"に設定
   DelButton.className = "DelButton"; //作ったボタンにclass割当 ← CSSを使いたいから
-  DelButton.id = msgId; //作ったボタンにid(uuid)割当 これで個々を判別
-  DelButton.addEventListener("click", () => { //delBtnクリックしたときそのIDをサーバーに送信
-    let ID = DelButton.id;  //ID は 押したボタンのID
-    socket.emit("delete message", ID);
+  DelButton.addEventListener("click", () => { //delBtnクリックしたときサーバーに送信
+    // socket.emit("delete message");
   })
 })
 
@@ -79,3 +127,13 @@ socket.on("delete message", (msgId) => { //delete messageとid 受け取り
   }
 })
 
+// ----------------------------------deleteAPIの処理-----------------------------
+async function deleteAPI(msgId) {
+  try {
+    console.log("DeleteAPI送信!")
+    console.log(`/api/v1/msg/${msgId}`)
+    await axios.delete(`/api/v1/msg/${msgId}`);
+  } catch (error) {
+    console.log(error);
+  }
+}
