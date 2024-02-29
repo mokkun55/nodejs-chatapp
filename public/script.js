@@ -64,26 +64,41 @@ clearButton.addEventListener("click", function (e) {
 form.addEventListener("submit", async (e) => { 
   e.preventDefault(); 
   if(InputName.value) {
-    // console.log(name)
-    if (input.value) { // 空白でなければ
-      let data = { // メッセージとnameをdataオブジェクトに格納 json形式
+    if (input.value) { 
+      let data = {
         msg: input.value,
         name: InputName.value,
       }; 
 
-    try {                 // ここでapiを叩いてデータをdbにアップロード
-      await axios.post(`/api/v1/msg`, data)
-    } catch (error) {
-      console.log(error);
-    }
+      try {
+        const response = await axios.post(`/api/v1/msg`, data);
+        const newMsgId = response.data._id; // 新しく割り当てられた_idを取得
 
-      socket.emit("chat message", data); 
-      input.value = ""; //入力欄を空にする
+        let item = document.createElement("li");
+        item.id = newMsgId;
+        item.textContent = InputName.value + ">> " + input.value;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+
+        let DelButton = document.createElement("button");
+        item.appendChild(DelButton);
+        DelButton.textContent = "消す";
+        DelButton.className = "DelButton";
+        DelButton.id = newMsgId;
+        DelButton.addEventListener("click", () => {
+          deleteAPI(DelButton.id);
+          socket.emit("delete message", DelButton.id);
+        });
+
+        input.value = "";
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      console.log("メッセージを入力してください")
+      console.log("メッセージを入力してください");
     }
   } else {
-    console.log("名前を入力してください")
+    console.log("名前を入力してください");
   }
 });
 // ------------------------------------------------------------------------------------------
